@@ -34,14 +34,16 @@ class DetailsScreen extends StatelessWidget {
                         Text(
                           "DEEPAK'S SNAPSHOT",
                           style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "PTSansNarrow"),
                         ),
                         Text(
                           "21.07.2020",
                           style: TextStyle(
-                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "PTSansNarrow"),
                         ),
                       ],
                     ),
@@ -64,7 +66,7 @@ class DetailsScreen extends StatelessWidget {
                       ],
                     ),
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: TableData(),
                     ),
                     SizedBox(
@@ -82,9 +84,9 @@ class DetailsScreen extends StatelessWidget {
                                 Text(
                                   "IMAGE",
                                   style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "PTSansNarrow"),
                                 ),
                                 Expanded(
                                   child: Card(
@@ -113,7 +115,8 @@ class DetailsScreen extends StatelessWidget {
                                   "CHART",
                                   style: TextStyle(
                                       fontSize: 22,
-                                      fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "PTSansNarrow"),
                                 ),
                                 Expanded(
                                   child: Card(

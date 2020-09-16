@@ -29,10 +29,11 @@ class DashboardScreen extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black54,
                           fontSize: 30.0,
-                          fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "PTSansNarrow"),
                     ),
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: TableData(),
                     ),
                     SizedBox(
@@ -43,10 +44,11 @@ class DashboardScreen extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black54,
                           fontSize: 30.0,
-                          fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "PTSansNarrow"),
                     ),
                     Container(
-                        height: MediaQuery.of(context).size.height * 0.4,
+                        height: MediaQuery.of(context).size.height * 0.3,
                         child: BarChartData()),
                   ],
                 ),

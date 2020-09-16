@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:guardplusplus/utils/navigator/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomAppBar extends StatelessWidget {
+class CustomAppBar extends StatefulWidget {
   final GlobalKey<ScaffoldState> stateKey;
 
   CustomAppBar({this.stateKey});
+
+  @override
+  _CustomAppBarState createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  SharedPreferences sharedPreferences;
+
+  void initPref() async {
+    sharedPreferences =
+        await SharedPreferences.getInstance(); //init pref here....
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initPref();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +40,8 @@ class CustomAppBar extends StatelessWidget {
         ),
         Positioned(
           child: AppBar(
+            centerTitle: false,
+            titleSpacing: 0.0,
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             title: Container(
@@ -34,7 +56,7 @@ class CustomAppBar extends StatelessWidget {
               child: GestureDetector(
                 child: Icon(Icons.menu, size: 40),
                 onTap: () {
-                  stateKey.currentState.openDrawer(); //open drawer
+                  widget.stateKey.currentState.openDrawer(); //open drawer
                 },
               ),
             ),
@@ -44,6 +66,7 @@ class CustomAppBar extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     print('logout');
+                    sharedPreferences.clear();
                     Keys.navKey.currentState
                         .popAndPushNamed(Routes.loginScreen);
                   },
