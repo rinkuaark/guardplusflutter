@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:guardplusplus/redux/actions/login_action.dart';
+import 'package:guardplusplus/redux/app_state.dart';
+import 'package:guardplusplus/redux/models/login_model.dart';
 import 'package:guardplusplus/screens/common_widgets/guard_logo.dart';
 import 'package:guardplusplus/utils/colors/colors.dart';
+import 'package:guardplusplus/utils/config/appdialogs.dart';
 import 'package:guardplusplus/utils/navigator/routes.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignScreen extends StatefulWidget {
@@ -10,6 +17,7 @@ class SignScreen extends StatefulWidget {
 }
 
 class _SignScreenState extends State<SignScreen> {
+  final GlobalKey<State> key = new GlobalKey<State>();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController _userController = TextEditingController();
   TextEditingController _passController = TextEditingController();
@@ -21,7 +29,11 @@ class _SignScreenState extends State<SignScreen> {
   bool _checkValidPass = false;
 
   SharedPreferences logindata;
-  bool newuser;
+  String newuser;
+
+  Store<AppState> store;
+
+  ProgressDialog progressDialog;
 
   @override
   void initState() {
@@ -33,9 +45,9 @@ class _SignScreenState extends State<SignScreen> {
 
   void check_if_already_login() async {
     logindata = await SharedPreferences.getInstance();
-    newuser = (logindata.getBool('login') ?? false);
+    newuser = (logindata.getString('admin_token') ?? null);
     print(newuser);
-    if (newuser) {
+    if (newuser != null) {
       Keys.navKey.currentState.popAndPushNamed(Routes.dashboardScreen);
     }
   }
@@ -51,66 +63,98 @@ class _SignScreenState extends State<SignScreen> {
 
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(context, type: ProgressDialogType.Normal);
+    progressDialog.style(message: "Please Wait....");
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            GuardLogo(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    soloLogo(),
-                    Container(
-                      child: Center(
-                          child: Text(
-                        "Welcome Back",
-                        style: TextStyle(
-                            fontSize: 40.0,
-                            color: Color(0xff0059A0),
-                            fontWeight: FontWeight.bold),
-                      )),
-                    ),
-                    Form(
-                      key: formKey,
-                      child: Container(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 30),
+      child: StoreConnector<AppState, _LoginViewModel>(
+        converter: (Store<AppState> store) {
+          this.store = store;
+          return _LoginViewModel.create(store, context);
+        },
+        onInit: (store) {
+          //store.dispatch(
+          //    LoginAction(loginModel: LoginModel("robin@gmail.com", "123456")));
+        },
+        onDidChange: (viewModel) {
+          if (viewModel.isLoader) {
+            //progressDialog.show();
+          } else {
+            //progressDialog.hide();
+            if (viewModel.errMsg != null) {
+              AppDialogs.showOKDialog(context, "Error", viewModel.errMsg);
+              _userController.text = '';
+              _passController.text = '';
+            }
+          }
+        },
+        builder: (BuildContext context, _LoginViewModel viewModel) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: viewModel.isLoader
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      GuardLogo(),
+                      Expanded(
+                        child: SingleChildScrollView(
                           child: Column(
                             children: [
+                              soloLogo(),
                               Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 24),
-                                  child:
-                                      usernameFormField()), //USERNAME TEXTFIELD
-                              SizedBox(
-                                height: 20,
+                                child: Center(
+                                    child: Text(
+                                  "Welcome Back",
+                                  style: TextStyle(
+                                      fontSize: 40.0,
+                                      color: Color(0xff0059A0),
+                                      fontWeight: FontWeight.bold),
+                                )),
                               ),
-                              Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 24),
-                                  child:
-                                      passwordFormField() //PASSWORD TEXTFIELD END
+                              Form(
+                                key: formKey,
+                                child: Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 30),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 24),
+                                            child:
+                                                usernameFormField()), //USERNAME TEXTFIELD
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 24),
+                                            child:
+                                                passwordFormField() //PASSWORD TEXTFIELD END
+                                            ),
+                                        Container(
+                                            margin: EdgeInsets.only(top: 16),
+                                            child: loginButton(viewModel)),
+                                      ],
+                                    ),
                                   ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 16),
-                                  child: loginButton())
+                                ),
+                              ),
+                              copyrightLogo()
                             ],
                           ),
                         ),
-                      ),
-                    ),
-                    copyrightLogo()
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
+                      )
+                    ],
+                  ),
+          );
+        },
       ),
     );
   }
@@ -204,14 +248,20 @@ class _SignScreenState extends State<SignScreen> {
     );
   }
 
-  Widget loginButton() {
+  Widget loginButton(_LoginViewModel _loginViewModel) {
     return RaisedButton(
       onPressed: () {
         if (formKey.currentState.validate()) {
-          print("Valid..${_userController.text}  ${_passController.text}");
-          logindata.setBool('login', true);
-          print(logindata.setBool('login', true));
-          Keys.navKey.currentState.popAndPushNamed(Routes.dashboardScreen);
+          //print("Valid..${_userController.text}  ${_passController.text}");
+
+          store.dispatch(LoginAction(
+              loginModel:
+                  LoginModel(_userController.text, _passController.text)));
+
+          //showDai();
+          //logindata.setBool('login', true);
+          //print(logindata.setBool('login', true));
+          //Keys.navKey.currentState.popAndPushNamed(Routes.dashboardScreen);
         } else {
           if (_userController.text == "" && _passController.text != "") {
             _focusNodePass.unfocus();
@@ -246,6 +296,22 @@ class _SignScreenState extends State<SignScreen> {
       height: 100,
       decoration: BoxDecoration(
           image: DecorationImage(image: AssetImage('images/copyright1.png'))),
+    );
+  }
+}
+
+class _LoginViewModel {
+  final bool isLoader;
+  final Store<AppState> store;
+  final String errMsg;
+
+  _LoginViewModel(this.isLoader, this.store, this.errMsg);
+
+  factory _LoginViewModel.create(Store<AppState> store, BuildContext context) {
+    return _LoginViewModel(
+      store.state.loginLoader,
+      store,
+      store.state.errLoginMsg,
     );
   }
 }

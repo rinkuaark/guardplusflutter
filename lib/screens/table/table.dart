@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:guardplusplus/redux/actions/table_action.dart';
+import 'package:guardplusplus/redux/app_state.dart';
+import 'package:guardplusplus/redux/models/table.response.dart';
 import 'package:guardplusplus/utils/colors/colors.dart';
+import 'package:redux/redux.dart';
 
 class TableData extends StatefulWidget {
   @override
@@ -7,89 +12,147 @@ class TableData extends StatefulWidget {
 }
 
 class _TableDataState extends State<TableData> {
-  List<User> list;
+  //List<User> list;
+  Store<AppState> store;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    list = User.getUserData();
+    //list = User.getUserData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      child: Card(
-        elevation: 20,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SingleChildScrollView(
-                    scrollDirection: Axis.horizontal, child: getDataTable()),
-              ],
-            ),
+    return StoreConnector<AppState, _TableViewModel>(
+      converter: (Store<AppState> store) {
+        this.store = store;
+        return _TableViewModel.create(store, context);
+      },
+      onInit: (store) {
+        store.dispatch(MainTableAction());
+      },
+      builder: (BuildContext context, _TableViewModel viewModel) {
+        //print("tabel data ${viewModel.tableRes.outputObj.runtimeType}");
+        return Container(
+          padding: EdgeInsets.all(8),
+          child: Card(
+            elevation: 20,
+            child: viewModel.isLoader
+                ? Center(child: CircularProgressIndicator())
+                : viewModel.tableRes != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: getDataTable(
+                                      viewModel.tableRes.outputObj)),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Center(child: CircularProgressIndicator()),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  DataTable getDataTable() {
+  DataTable getDataTable(List<TableValues> tableList) {
     return DataTable(
-        columnSpacing: 20,
+        columnSpacing: 12,
         columns: [
           DataColumn(
-              label: Text("ID",
+              label: Text("Name",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.w900)),
               numeric: false,
-              tooltip: "This is ID"),
+              tooltip: "This is Name"),
           DataColumn(
             label: Text(
-              "First Name",
+              "Loc",
               style: TextStyle(
                   fontSize: 18,
                   color: Colors.black,
                   fontWeight: FontWeight.w900),
             ),
             numeric: false,
-            tooltip: "This is First name",
+            tooltip: "This is Location",
           ),
           DataColumn(
-              label: Text("Last Name",
+              label: Text("Attend",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.w900)),
               numeric: false,
-              tooltip: "This is Last Name"),
+              tooltip: "This is attend"),
           DataColumn(
-              label: Text("Gender",
+              label: Text("Missed",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.w900)),
               numeric: false,
-              tooltip: "This is Gender"),
+              tooltip: "This is missed"),
+          DataColumn(
+              label: Text("View",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w900)),
+              numeric: false,
+              tooltip: "This is view"),
         ],
-        rows: list
+        rows: tableList
             .map((user) => DataRow(cells: [
                   DataCell(
                     Container(
-                        alignment: Alignment.center,
-                        child: Text(user.id.toString(),
-                            textAlign: TextAlign.center)),
+                      alignment: Alignment.center,
+                      child: Text(
+                        user.gname.toString(),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
-                  DataCell(Container(
-                      alignment: Alignment.center, child: Text(user.firsname))),
-                  DataCell(Container(
-                      alignment: Alignment.center, child: Text(user.lastname))),
+                  DataCell(
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        user.guardId.toString(),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        user.attended.toString(),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        user.missed.toString(),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
                   DataCell(
                     Container(
                       alignment: Alignment.center,
@@ -98,7 +161,7 @@ class _TableDataState extends State<TableData> {
                           textColor: Colors.white,
                           child: Text("View"),
                           onPressed: () {
-                            print(user.id.toString());
+                            //print(user.missed.toString());
                           }),
                     ),
                   ),
@@ -107,107 +170,121 @@ class _TableDataState extends State<TableData> {
   }
 }
 
-class User {
-  int id;
-  String firsname;
-  String lastname;
-  String gender;
-  String add;
+//class User {
+//  int id;
+//  String firsname;
+//  String lastname;
+//  String gender;
+//  String add;
 
-  User({this.id, this.firsname, this.lastname, this.gender, this.add});
+//  User({this.id, this.firsname, this.lastname, this.gender, this.add});
 
-  static List<User> getUserData() {
-    return <User>[
-      User(
-          id: 1,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 2,
-          firsname: "Robin",
-          lastname: "Kamboj",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 3,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 5,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 6,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 7,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-      User(
-          id: 4,
-          firsname: "Rinku",
-          lastname: "Dhiman",
-          gender: "M",
-          add: "New"),
-    ];
+//  static List<User> getUserData() {
+//    return <User>[
+//      User(
+//          id: 1,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 2,
+//          firsname: "Robin",
+//          lastname: "Kamboj",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 3,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 5,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 6,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 7,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//      User(
+//          id: 4,
+//          firsname: "Rinku",
+//          lastname: "Dhiman",
+//          gender: "M",
+//          add: "New"),
+//    ];
+//  }
+//}
+
+class _TableViewModel {
+  final MainTableResponse tableRes;
+  final bool isLoader;
+  final Store<AppState> store;
+  final String errMas;
+
+  _TableViewModel(this.tableRes, this.store, this.isLoader, this.errMas);
+
+  factory _TableViewModel.create(Store<AppState> store, BuildContext context) {
+    return _TableViewModel(store.state.mainTableRes, store,
+        store.state.mainTableLoader, store.state.errMainTable);
   }
 }

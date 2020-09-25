@@ -29,7 +29,6 @@ class _PieChartState extends State<PieChart> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     seriesList = _createSampleData();
   }

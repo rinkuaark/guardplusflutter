@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:guardplusplus/utils/navigator/routes.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:guardplusplus/redux/actions/logout_action.dart';
+import 'package:guardplusplus/redux/app_state.dart';
+import 'package:guardplusplus/utils/config/appdialogs.dart';
+import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomAppBar extends StatefulWidget {
@@ -13,6 +17,7 @@ class CustomAppBar extends StatefulWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   SharedPreferences sharedPreferences;
+  Store<AppState> store;
 
   void initPref() async {
     sharedPreferences =
@@ -21,7 +26,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initPref();
   }
@@ -39,48 +43,78 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   fit: BoxFit.fill)),
         ),
         Positioned(
-          child: AppBar(
-            centerTitle: false,
-            titleSpacing: 0.0,
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            title: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                image: DecorationImage(image: AssetImage("images/guard.png")),
-              ),
-            ),
-            leading: Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: GestureDetector(
-                child: Icon(Icons.menu, size: 40),
-                onTap: () {
-                  widget.stateKey.currentState.openDrawer(); //open drawer
-                },
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: GestureDetector(
-                  onTap: () {
-                    print('logout');
-                    sharedPreferences.clear();
-                    Keys.navKey.currentState
-                        .popAndPushNamed(Routes.loginScreen);
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    child: Image.asset("images/logout.png"),
-                  ),
+            child: StoreConnector<AppState, _LogoutViewModel>(
+          onDidChange: (viewModel) {
+            if (viewModel.errMsg != null) {
+              AppDialogs.showOKDialog(context, "Error", viewModel.errMsg);
+            }
+          },
+          converter: (
+            Store<AppState> store,
+          ) {
+            this.store = store;
+            return _LogoutViewModel.create(store, context);
+          },
+          builder: (BuildContext context, _LogoutViewModel viewModel) {
+            return AppBar(
+              centerTitle: false,
+              titleSpacing: 0.0,
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              title: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage("images/guard.png")),
                 ),
-              )
-            ],
-          ),
-        ),
+              ),
+              leading: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: GestureDetector(
+                  child: Icon(Icons.menu, size: 40),
+                  onTap: () {
+                    widget.stateKey.currentState.openDrawer(); //open drawer
+                  },
+                ),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      print('logout');
+
+                      store.dispatch(LogoutAction());
+                      //Keys.navKey.currentState
+                      //    .popAndPushNamed(Routes.loginScreen);
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      child: Image.asset("images/logout.png"),
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
+        )),
       ],
+    );
+  }
+}
+
+class _LogoutViewModel {
+  final Store<AppState> store;
+  final String errMsg;
+
+  _LogoutViewModel(this.store, this.errMsg);
+
+  factory _LogoutViewModel.create(Store<AppState> store, BuildContext context) {
+    //print("hello my ${store.state.logoutLoader}");
+    return _LogoutViewModel(
+      store,
+      store.state.errLoginMsg,
     );
   }
 }

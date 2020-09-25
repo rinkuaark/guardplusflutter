@@ -1,17 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:guardplusplus/application.dart';
+import 'package:guardplusplus/redux/app_reducer.dart';
+import 'package:guardplusplus/redux/app_state.dart';
+import 'package:guardplusplus/redux/middleware/middleware.dart';
 import 'package:guardplusplus/utils/colors/colors.dart';
-import 'package:guardplusplus/utils/defines/shared_pref_defines.dart';
-import 'package:guardplusplus/utils/sharedpref/shared_pref.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:redux/redux.dart';
 
 void main() async {
+  final store = Store<AppState>(appReducer,
+      initialState: AppState(
+        errLoginMsg: null,
+        loginLoader: false,
+        errGuard: null,
+        errLogout: null,
+        errMainTable: null,
+        guardLoader: false,
+        mainTableLoader: false,
+      ),
+      middleware: createAppMiddleware());
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: AppColor.colorPrimary));
 
-  runApp(Application());
+  runApp(StoreProvider(store: store, child: Application(store)));
 }
 
 //class SharedPrefApp extends StatefulWidget {
