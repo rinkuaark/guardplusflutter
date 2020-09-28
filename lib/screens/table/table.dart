@@ -4,6 +4,7 @@ import 'package:guardplusplus/redux/actions/table_action.dart';
 import 'package:guardplusplus/redux/app_state.dart';
 import 'package:guardplusplus/redux/models/table.response.dart';
 import 'package:guardplusplus/utils/colors/colors.dart';
+import 'package:guardplusplus/utils/navigator/routes.dart';
 import 'package:redux/redux.dart';
 
 class TableData extends StatefulWidget {
@@ -161,7 +162,10 @@ class _TableDataState extends State<TableData> {
                           textColor: Colors.white,
                           child: Text("View"),
                           onPressed: () {
-                            //print(user.missed.toString());
+                            Keys.navKey.currentState
+                                .pushNamed(Routes.resultScreen, arguments: {
+                              'guardId': user.guardId.toString()
+                            });
                           }),
                     ),
                   ),

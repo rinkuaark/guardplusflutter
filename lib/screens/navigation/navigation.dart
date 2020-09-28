@@ -25,13 +25,14 @@ class NavigationDrawer extends StatelessWidget {
                   icon: Icons.home,
                   text: 'Home',
                   onTap: () {
-                    Keys.navKey.currentState.pushNamed(Routes.dashboardScreen);
+                    Keys.navKey.currentState
+                        .popAndPushNamed(Routes.dashboardScreen);
                   }),
               createDrawerBodyItem(
                   icon: Icons.notifications_active,
                   text: 'Profile',
                   onTap: () {
-                    Keys.navKey.currentState.pushNamed(Routes.resultScreen);
+                    //Keys.navKey.currentState.pushNamed(Routes.resultScreen);
                   }),
             ],
           ),

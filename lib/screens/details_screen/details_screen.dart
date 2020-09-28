@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:guardplusplus/screens/chart/piechart.dart';
 import 'package:guardplusplus/screens/common_widgets/app_bar.dart';
 import 'package:guardplusplus/screens/navigation/navigation.dart';
-import 'package:guardplusplus/screens/table/table.dart';
 
 class DetailsScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  Map data = {};
+
   @override
   Widget build(BuildContext context) {
+    data = ModalRoute.of(context).settings.arguments;
+    print(data);
     return Scaffold(
       key: _scaffoldKey,
-      drawer: NavigationDrawer(),
       backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomAppBar(stateKey: _scaffoldKey),
+          CustomAppBarWithBack(),
           SizedBox(
             height: 8,
           ),
@@ -67,7 +69,7 @@ class DetailsScreen extends StatelessWidget {
                     ),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.3,
-                      child: TableData(),
+                      child: Center(child: Text('Table Here')),
                     ),
                     SizedBox(
                       height: 8.0,
