@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:guardplusplus/redux/actions/chart_action.dart';
+import 'package:guardplusplus/redux/actions/guard_detail_action.dart';
 import 'package:guardplusplus/redux/actions/login_action.dart';
 import 'package:guardplusplus/redux/actions/logout_action.dart';
 import 'package:guardplusplus/redux/actions/table_action.dart';
 import 'package:guardplusplus/redux/app_state.dart';
 import 'package:guardplusplus/redux/models/chart_response.dart';
+import 'package:guardplusplus/redux/models/guarddetails_model.dart';
+import 'package:guardplusplus/redux/models/guarddetails_response.dart';
 import 'package:guardplusplus/redux/models/login_model.dart';
 import 'package:guardplusplus/redux/models/login_response.dart';
 import 'package:guardplusplus/redux/models/logout_response.dart';
@@ -22,6 +25,7 @@ class ApiProvider {
   String logoutUrl = "/admin/logout";
   String guardAlarmUrl = "/admin/charts";
   String guardTable = "/admin/guards";
+  String guardDetail = "/admin/guarddetails";
 
   //-------------------Sign In Api----------------------//
   Future<OutputObj> signInApi(Store<AppState> store, LoginModel model) async {
@@ -197,6 +201,61 @@ class ApiProvider {
     } catch (e) {
       store.dispatch(MainTableLoaderAction(
           tableResponse: null, tableLoader: false, tableError: e.toString()));
+      return null;
+    }
+  }
+
+  //-------------------guardDetailResponse  Api----------------------//
+  Future<GuardDetailsResponse> guardDetailApi(
+      Store<AppState> store, GuardModel action) async {
+    GuardDetailsResponse _output;
+    store.dispatch(GuardDetailActionLoader(
+        guardDetailModel: null,
+        guardDetailLoader: true,
+        guardDetailError: null));
+
+    //SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    Map<String, String> header = new Map();
+    header["content-type"] = "application/json";
+    //print(model.u_email);
+    int guardid = int.parse(action.guard_id);
+    //print('Rinku Dhiman: $guardid');
+    try {
+      String body = '{"inputObj": {"guard_id": $guardid}}';
+      final response =
+          await http.post(baseUrl + guardDetail, body: body, headers: header);
+      if (response.statusCode == 200) {
+        //print("guard data: ${response.body}");
+        _output = GuardDetailsResponse.fromJson(json.decode(response.body));
+        if (_output.error != null) {
+          store.dispatch(GuardDetailActionLoader(
+              guardDetailModel: null,
+              guardDetailLoader: false,
+              guardDetailError: _output.error));
+          return _output;
+        } else {
+          //print("guard data: ${_output.runtimeType}");
+          print("guardDetails data: ${_output.outputObj}");
+          store.dispatch(GuardDetailActionLoader(
+              guardDetailModel: _output,
+              guardDetailLoader: false,
+              guardDetailError: null));
+          //preferences.setString('admin_token', _output.outputObj.admin_token);
+          return _output;
+        }
+      } else {
+        store.dispatch(GuardDetailActionLoader(
+            guardDetailModel: null,
+            guardDetailLoader: false,
+            guardDetailError: "GuardDetailsError......."));
+        return null;
+      }
+    } catch (e) {
+      store.dispatch(GuardDetailActionLoader(
+          guardDetailModel: null,
+          guardDetailLoader: true,
+          guardDetailError: e.toString()));
       return null;
     }
   }

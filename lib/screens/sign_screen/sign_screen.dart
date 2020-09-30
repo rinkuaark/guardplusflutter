@@ -38,12 +38,12 @@ class _SignScreenState extends State<SignScreen> {
   @override
   void initState() {
     super.initState();
-    check_if_already_login();
+    checkIfAlreadyLogin();
     _focusNodeUser = FocusNode();
     _focusNodePass = FocusNode();
   }
 
-  void check_if_already_login() async {
+  void checkIfAlreadyLogin() async {
     logindata = await SharedPreferences.getInstance();
     newuser = (logindata.getString('admin_token') ?? null);
     print(newuser);
@@ -177,6 +177,7 @@ class _SignScreenState extends State<SignScreen> {
       //USERNAME TEXTFIELD
       focusNode: _focusNodeUser,
       controller: _userController,
+      // ignore: missing_return
       validator: (value) {
         if (value.isEmpty) {
           setState(() {
@@ -210,6 +211,7 @@ class _SignScreenState extends State<SignScreen> {
       //PASSWORD TEXTFIELD
       focusNode: _focusNodePass,
       controller: _passController,
+      // ignore: missing_return
       validator: (value) {
         if (value.isEmpty) {
           setState(() {

@@ -64,49 +64,74 @@ class _TableDataState extends State<TableData> {
 
   DataTable getDataTable(List<TableValues> tableList) {
     return DataTable(
-        columnSpacing: 12,
+        columnSpacing: 15,
         columns: [
           DataColumn(
-              label: Text("Name",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w900)),
+              label: Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text("Name",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900)),
+                ),
+              ),
               numeric: false,
               tooltip: "This is Name"),
           DataColumn(
-            label: Text(
-              "Loc",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w900),
+            label: Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                child: Text(
+                  "Loc",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w900),
+                ),
+              ),
             ),
             numeric: false,
             tooltip: "This is Location",
           ),
           DataColumn(
-              label: Text("Attend",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w900)),
+              label: Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text("Attend",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900)),
+                ),
+              ),
               numeric: false,
               tooltip: "This is attend"),
           DataColumn(
-              label: Text("Missed",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w900)),
+              label: Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text("Missed",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900)),
+                ),
+              ),
               numeric: false,
               tooltip: "This is missed"),
           DataColumn(
-              label: Text("View",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w900)),
+              label: Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text("View",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900)),
+                ),
+              ),
               numeric: false,
               tooltip: "This is view"),
         ],

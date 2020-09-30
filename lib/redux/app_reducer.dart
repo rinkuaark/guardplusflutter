@@ -13,5 +13,10 @@ AppState appReducer(AppState preState, dynamic action) {
     mainTableRes: mainTableReducer(preState.mainTableRes, action),
     mainTableLoader: mainTableLoaderReducer(preState.mainTableLoader, action),
     errMainTable: mainTableErrorReducer(preState.errMainTable, action),
+    guardDetailRes: guardDetailReducer(preState.guardDetailRes, action),
+    guardDetailLoader:
+        guardDetailLoaderReducer(preState.guardDetailLoader, action),
+    guardDetailError:
+        guardDetailErrorReducer(preState.guardDetailError, action),
   );
 }

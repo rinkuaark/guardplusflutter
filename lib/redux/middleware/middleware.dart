@@ -1,9 +1,11 @@
 import 'package:guardplusplus/redux/actions/chart_action.dart';
+import 'package:guardplusplus/redux/actions/guard_detail_action.dart';
 import 'package:guardplusplus/redux/actions/login_action.dart';
 import 'package:guardplusplus/redux/actions/logout_action.dart';
 import 'package:guardplusplus/redux/actions/table_action.dart';
 import 'package:guardplusplus/redux/app_state.dart';
 import 'package:guardplusplus/redux/models/chart_response.dart';
+import 'package:guardplusplus/redux/models/guarddetails_response.dart';
 import 'package:guardplusplus/redux/models/login_response.dart';
 import 'package:guardplusplus/redux/models/logout_response.dart';
 import 'package:guardplusplus/redux/models/table.response.dart';
@@ -20,6 +22,7 @@ List<Middleware<AppState>> createAppMiddleware() {
     TypedMiddleware<AppState, LogoutAction>(_logoutAction),
     TypedMiddleware<AppState, ChartAction>(_chartAction),
     TypedMiddleware<AppState, MainTableAction>(_tableAction),
+    TypedMiddleware<AppState, GuardDetailAction>(_guardDetailAction),
   ];
 }
 
@@ -72,6 +75,19 @@ void _tableAction(
     if (getResponse.outputObj != null) {
       //Keys.navKey.currentState.popAndPushNamed(Routes.loginScreen);
       print("Table with value");
+    }
+  }
+}
+
+///single guard middleware
+void _guardDetailAction(Store<AppState> store, GuardDetailAction action,
+    NextDispatcher next) async {
+  GuardDetailsResponse getResponse =
+      await ApiProvider().guardDetailApi(store, action.guardModel);
+  if (getResponse != null) {
+    if (getResponse.outputObj != null) {
+      //Keys.navKey.currentState.popAndPushNamed(Routes.loginScreen);
+      print("GuardDetail with value");
     }
   }
 }

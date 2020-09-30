@@ -12,14 +12,15 @@ import 'package:redux/redux.dart';
 void main() async {
   final store = Store<AppState>(appReducer,
       initialState: AppState(
-        errLoginMsg: null,
-        loginLoader: false,
-        errGuard: null,
-        errLogout: null,
-        errMainTable: null,
-        guardLoader: false,
-        mainTableLoader: false,
-      ),
+          errLoginMsg: null,
+          loginLoader: false,
+          errGuard: null,
+          errLogout: null,
+          errMainTable: null,
+          guardLoader: false,
+          mainTableLoader: false,
+          guardDetailLoader: false,
+          guardDetailError: null),
       middleware: createAppMiddleware());
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: AppColor.colorPrimary));

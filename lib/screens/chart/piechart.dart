@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as chart;
 
 class PieChart extends StatefulWidget {
+  int att;
+  int miss;
+
+  PieChart({this.att, this.miss});
   @override
   _PieChartState createState() => _PieChartState();
 }
@@ -9,12 +13,10 @@ class PieChart extends StatefulWidget {
 class _PieChartState extends State<PieChart> {
   List<chart.Series> seriesList;
 
-  static List<chart.Series<LinearSales, int>> _createSampleData() {
+  List<chart.Series<LinearSales, int>> _createSampleData() {
     final data = [
-      new LinearSales(0, 100),
-      new LinearSales(1, 75),
-      new LinearSales(2, 25),
-      new LinearSales(3, 5),
+      new LinearSales(0, widget.att),
+      new LinearSales(1, widget.miss),
     ];
 
     return [
@@ -31,6 +33,7 @@ class _PieChartState extends State<PieChart> {
   void initState() {
     super.initState();
     seriesList = _createSampleData();
+    //print(widget.alarmList);
   }
 
   @override
