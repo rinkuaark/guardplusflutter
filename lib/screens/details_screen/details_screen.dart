@@ -7,6 +7,7 @@ import 'package:guardplusplus/redux/models/guarddetails_response.dart';
 import 'package:guardplusplus/screens/chart/piechart.dart';
 import 'package:guardplusplus/screens/common_widgets/app_bar.dart';
 import 'package:guardplusplus/screens/table/guard_table.dart';
+import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 
 // ignore: must_be_immutable
@@ -16,6 +17,12 @@ class DetailsScreen extends StatelessWidget {
   Map data = {};
   String guardId;
   Store<AppState> store;
+
+  String currentDate() {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('dd-MM-yyyy');
+    return formatter.format(now);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +77,7 @@ class DetailsScreen extends StatelessWidget {
                                           fontFamily: "PTSansNarrow"),
                                     ),
                                     Text(
-                                      "21.07.2020",
+                                      currentDate(),
                                       style: TextStyle(
                                           fontSize: 24.0,
                                           fontWeight: FontWeight.bold,

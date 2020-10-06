@@ -28,12 +28,12 @@ class NavigationDrawer extends StatelessWidget {
                     Keys.navKey.currentState
                         .popAndPushNamed(Routes.dashboardScreen);
                   }),
-              createDrawerBodyItem(
-                  icon: Icons.notifications_active,
-                  text: 'Profile',
-                  onTap: () {
-                    //Keys.navKey.currentState.pushNamed(Routes.resultScreen);
-                  }),
+              //createDrawerBodyItem(
+              //    icon: Icons.notifications_active,
+              //    text: 'Profile',
+              //    onTap: () {
+              //      //Keys.navKey.currentState.pushNamed(Routes.resultScreen);
+              //    }),
             ],
           ),
           Padding(

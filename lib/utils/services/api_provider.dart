@@ -18,7 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiProvider {
   //base url
-  String baseUrl = "http://demo.aarktechub.com/guardapp/api";
+  //String baseUrl = "http://demo.aarktechub.com/guardapp/api";
+  String baseUrl = "http://13.233.45.24/guardapp/api";
 
   //main url
   String loginUrl = "/admin/login";
